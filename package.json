@@ -1,0 +1,24 @@
+{
+  "name": "termitepiles",
+  "version": "0.1.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- -R spec"
+  },
+  "repository": "http://github.com/vinceallenvince/termitepiles",
+  "author": {
+    "name": "Vince Allen",
+    "address": "Brooklyn, NY",
+    "email": "vince@vinceallen.com",
+    "twitter": "@vinceallenvince"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "istanbul": "^0.3.2",
+    "jsdom": "^1.3.1",
+    "mocha": "^2.0.1",
+    "sinon": "^1.12.1"
+  }
+}
