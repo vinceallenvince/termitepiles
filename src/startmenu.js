@@ -17,12 +17,13 @@ StartMenu.prototype.init = function(container, opt_labels) {
       {
         labelTotalWoodChips: 'Total Wood Chips',
         labelTotalTermites: 'Total Termites',
+        labelSensorLength: 'Sensor Length',
         labelStartButton: 'Start'
       }
 };
 
 StartMenu.prototype.render = function(template) {
-  this.container.innerHTML = template(this);
+  this.container.innerHTML = template(this.labels);
 };
 
 module.exports = StartMenu;
