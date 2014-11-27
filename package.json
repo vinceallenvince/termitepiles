@@ -21,5 +21,11 @@
     "mocha": "^2.0.1",
     "sinon": "^1.12.1",
     "handlebars": "~2.0.0"
+  },
+  "dependencies": {
+    "bitshadowmachine": "~3.0.7",
+    "drawing-utils-lib": "~0.1.5",
+    "colorpalette": "~0.1.5",
+    "soundbed": "~0.1.7"
   }
 }
