@@ -1,5 +1,7 @@
-var BitShadowMachine = require('bitshadowmachine');
-var utils = require('drawing-utils-lib');
+var degreesToRadians = require('drawing-utils-lib').degreesToRadians;
+var extend = require('drawing-utils-lib').extend;
+var Item = require('bitshadowmachine').Item;
+var Vector = require('vector2d-lib');
 
 /**
  * Creates a new WoodChip.
@@ -8,9 +10,9 @@ var utils = require('drawing-utils-lib');
  * @extends Item
  */
 function WoodChip() {
-  //Item.call(this);
+  Item.call(this);
 }
-//Utils.extend(WoodChip, Item);
+extend(WoodChip, Item);
 
 /**
  * Initializes an instance of WoodChip.
@@ -19,9 +21,9 @@ function WoodChip() {
  * @param {Array} [opt_options.color = 200, 200, 200] Color.
  */
 WoodChip.prototype.init = function(world, opt_options) {
-  //WoodChip._superClass.init.call(this, world, opt_options);
   if (!world) throw new Error('WoodChip.init requires "world" argument.');
 
+  WoodChip._superClass.init.call(this, world, opt_options);
   var options = opt_options || {};
 
   this.name = options.name || 'WoodChip';
@@ -30,7 +32,8 @@ WoodChip.prototype.init = function(world, opt_options) {
   this.offsetAngle = options.offsetAngle || 0;
   this.beforeStep = options.beforeStep || null;
 
-  this.offsetVector = new BitShadowMachine.Vector();
+  this.offsetVector = new Vector();
+  this.parent = null;
 };
 
 WoodChip.prototype.step = function() {
@@ -40,7 +43,7 @@ WoodChip.prototype.step = function() {
   if (this.parent) {
     if (this.offsetDistance) {
       var r = this.offsetDistance; // use angle to calculate x, y
-      var theta = Utils.degreesToRadians(this.parent.angle + this.offsetAngle);
+      var theta = degreesToRadians(this.parent.angle + this.offsetAngle);
       var x = r * Math.cos(theta);
       var y = r * Math.sin(theta);
 

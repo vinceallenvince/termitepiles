@@ -24,8 +24,9 @@
   },
   "dependencies": {
     "bitshadowmachine": "~3.0.7",
-    "drawing-utils-lib": "~0.1.5",
     "colorpalette": "~0.1.5",
-    "soundbed": "~0.1.7"
+    "drawing-utils-lib": "~0.1.5",
+    "soundbed": "~0.1.7",
+    "vector2d-lib": "0.0.12"
   }
 }
