@@ -1,8 +1,9 @@
 var BitShadowMachine = require('bitshadowmachine');
 var ColorPalette = require('colorpalette');
 var rand = require('drawing-utils-lib').getRandomNumber;
-var Utils = require('../src/utils');
+var Utils = require('./utils');
 var Vector = require('vector2d-lib');
+var Woodchip = require('./woodchip');
 
 /**
  * Creates a new Workspace.
@@ -12,8 +13,11 @@ var Vector = require('vector2d-lib');
  */
 function Workspace() {
   this.paletteTermite = new ColorPalette();
-  this.paletteFood = new ColorPalette();
+  this.paletteWoodchip = new ColorPalette();
   this.initialWoodchipLocs = [];
+  BitShadowMachine.System.Classes = {
+    Woodchip: Woodchip
+  };
 }
 
 /**
@@ -27,7 +31,11 @@ Workspace.prototype.init = function(params) {
     totalTermites: 'number',
     sensorLength: 'number',
     workspaceWidth: 'number',
-    workspaceHeight: 'number'
+    workspaceHeight: 'number',
+    workspaceResolution: 'number',
+    workspaceContainer: 'object',
+    workspaceColor: 'object',
+    workspaceFriction: 'number'
   };
 
   Utils.checkExpectedProps(expected, params);
@@ -37,16 +45,54 @@ Workspace.prototype.init = function(params) {
   this.sensorLength = params.sensorLength;
   this.workspaceWidth = params.workspaceWidth;
   this.workspaceHeight = params.workspaceHeight;
+  this.workspaceResolution = params.workspaceResolution;
+  this.workspaceContainer = params.workspaceContainer;
+  this.workspaceColor = params.workspaceColor;
+  this.workspaceFriction = params.workspaceFriction;
 
   this.initialWoodchipSeparation = params.initialWoodchipSeparation || 6;
 };
 
 Workspace.prototype.createSystem = function() {
+  BitShadowMachine.System.setup(this.setupHandler.bind(this));
+};
+
+Workspace.prototype.setupHandler = function() {
+
+  BitShadowMachine.System.add('World', {
+    width: this.workspaceWidth,
+    height: this.workspaceHeight,
+    resolution: this.workspaceResolution,
+    el: this.workspaceContainer,
+    color: this.workspaceColor,
+    gravity: new Vector(),
+    c: this.workspaceFriction
+  });
 
   for (var i = 0; i < this.totalWoodChips; i++) {
-    var loc = this.getLocation();
-    //createWoodchips(loc.x, loc.y, i);
+    this.createWoodchips(this.getLocation(), i);
   }
+};
+
+/**
+ * Creates BitShadowMachine records representing Woodchips.
+ * @param  {Object} loc   A vector.
+ * @param  {number} index A number representing the index in the total
+ *     number of Woodchips.
+ */
+Workspace.prototype.createWoodchips = function(loc, index) {
+  var chip = BitShadowMachine.System.add('Woodchip', {
+    type: 'Woodchip',
+    scale: 2,
+    offsetDistance: -2,
+    color: this.paletteWoodchip.getColor(),
+    isStatic: false,
+    location: new Vector(loc.x, loc.y)
+  });
+  chip.type = 'chip';
+  chip.index = index;
+  chip.dropCount = 60;
+  return chip;
 };
 
 /**
@@ -111,7 +157,7 @@ Workspace.prototype.createColorPalettes = function() {
     endColor: [157, 135, 68]
   });
 
-  this.paletteFood.addColor({
+  this.paletteWoodchip.addColor({
     min: 8,
     max: 24,
     startColor: [196, 193, 166],

@@ -6,12 +6,18 @@ var Workspace = require('../src/workspace');
 var ColorPalette = require('colorpalette');
 var Vector = require('vector2d-lib');
 
+var BitShadowMachine = require('bitshadowmachine');
+
 var params = {
   totalWoodChips: 3000,
   totalTermites: 30,
   sensorLength: 10,
   workspaceWidth: 960,
-  workspaceHeight: 540
+  workspaceHeight: 540,
+  workspaceResolution: 2,
+  workspaceContainer: {},
+  workspaceColor: [0, 0, 0],
+  workspaceFriction: 0.1
 };
 
 describe('Workspace', function() {
@@ -21,6 +27,9 @@ describe('Workspace', function() {
     it('should load.', function() {
       var workspace = new Workspace();
       expect(workspace instanceof Workspace).to.be(true);
+      expect(workspace.paletteTermite instanceof ColorPalette).to.be(true);
+      expect(workspace.paletteWoodchip instanceof ColorPalette).to.be(true);
+      expect(workspace.initialWoodchipLocs.length).to.be(0);
     });
   });
 
@@ -50,12 +59,53 @@ describe('Workspace', function() {
 
   describe('createSystem', function() {
 
-    it('should create Woodchips.', function() {
+    it('should call Bit-Shadow Machine System setup and pass a callback.', function() {
       var workspace = new Workspace();
-      var stub = sinon.stub(workspace, 'getLocation');
+      var stubBSMSetup = sinon.stub(BitShadowMachine.System, 'setup');
       workspace.init(params);
       workspace.createSystem();
-      expect(stub.called).to.be(true);
+      expect(stubBSMSetup.called).to.be(true);
+      BitShadowMachine.System.setup.restore();
+    });
+  });
+
+  describe('setupHandler', function() {
+
+    it('should create a world and Woodchips', function() {
+
+      var stubBSMAdd = sinon.stub(BitShadowMachine.System, 'add');
+
+      var workspace = new Workspace();
+      var stubGetLocation = sinon.stub(workspace, 'getLocation');
+      var stubCreateWoodchips = sinon.stub(workspace, 'createWoodchips');
+
+      params.totalWoodChips = 3;
+      workspace.init(params);
+      workspace.setupHandler();
+
+      expect(stubBSMAdd.called).to.be(true);
+      expect(stubGetLocation.calledThrice).to.be(true);
+      expect(stubCreateWoodchips.calledThrice).to.be(true);
+
+      BitShadowMachine.System.add.restore();
+      workspace.getLocation.restore();
+      workspace.createWoodchips.restore();
+    });
+  });
+
+  describe('createWoodchips', function() {
+
+    it('should create BitShadowMachine records representing Woodchips.', function() {
+      var stubBSM = sinon.stub(BitShadowMachine.System, 'add');
+      stubBSM.returns({});
+      var vec = new Vector(10, 10);
+      var workspace = new Workspace();
+      var stubColorPalette = sinon.stub(workspace.paletteWoodchip, 'getColor');
+      workspace.init(params);
+      workspace.createWoodchips(vec, 10);
+
+      expect(stubBSM.called).to.be(true);
+      expect(stubColorPalette.called).to.be(true);
     });
   });
 
@@ -118,7 +168,7 @@ describe('Workspace', function() {
       var vecA = new Vector(100, 100);
       var vecB = new Vector(150, 150);
       var vecC = new Vector(200, 200);
-      var check = workspace.inVecArray(vec, [vecA, vecB, vecC], 20);
+      var check = workspace.inVecArray(vec, [vecA, vecB, vecC], 2);
       expect(check).to.be(false);
     });
   });
