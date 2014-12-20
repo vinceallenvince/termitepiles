@@ -2,7 +2,7 @@
   "name": "termitepiles",
   "version": "0.1.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "istanbul cover _mocha -- -R spec"
   },
@@ -31,7 +31,8 @@
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-exec": "~0.4.6",
     "grunt-jsdoc": "~0.4.0",
-    "grunt-plato": "~0.2.1"
+    "grunt-plato": "~0.2.1",
+    "browserify-handlebars": "~1.0.0"
   },
   "dependencies": {
     "bitshadowmachine": "~3.0.7",

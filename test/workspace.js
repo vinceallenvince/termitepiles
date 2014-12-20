@@ -62,10 +62,13 @@ describe('Workspace', function() {
     it('should call Bit-Shadow Machine System setup and pass a callback.', function() {
       var workspace = new Workspace();
       var stubBSMSetup = sinon.stub(BitShadowMachine.System, 'setup');
+      var stubBSMLoop = sinon.stub(BitShadowMachine.System, 'loop');
       workspace.init(params);
       workspace.createSystem();
       expect(stubBSMSetup.called).to.be(true);
+      expect(stubBSMLoop.called).to.be(true);
       BitShadowMachine.System.setup.restore();
+      BitShadowMachine.System.loop.restore();
     });
   });
 

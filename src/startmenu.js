@@ -13,13 +13,13 @@ function StartMenu() {}
 
 /**
  * Initializes startMenu.
- * @param  {Object} container  A dom element containing menu.
- * @param  {Object} opt_labels A map of label names.
+ * @param  {Object}   container             A dom element containing menu.
+ * @param  {Function} [opt_startHandler=] A function to run when start button is clicked.
+ * @param  {Object}   [opt_labels=]         A map of label names.
  */
-StartMenu.prototype.init = function(container, opt_labels) {
+StartMenu.prototype.init = function(container, opt_callback, opt_labels) {
   if (!container) throw new Error('StartMenu.init requires a "container" argument.');
   this.container = container;
-
   this.labels = opt_labels ||
       {
         labelTotalWoodChips: 'Total Wood Chips',
@@ -27,6 +27,7 @@ StartMenu.prototype.init = function(container, opt_labels) {
         labelSensorLength: 'Sensor Length',
         labelStartButton: 'Start'
       }
+  this.callback = opt_callback || null;
 };
 
 /**
@@ -34,27 +35,28 @@ StartMenu.prototype.init = function(container, opt_labels) {
  * @param  {Function} template A handlebars template.
  */
 StartMenu.prototype.render = function(template) {
-  this.container.innerHTML = template(this.labels);
+  this.container.insertAdjacentHTML('beforeend', template(this.labels));
+  this.attachEvents();
 };
 
 /**
  * Attaches click event to start button.
  */
 StartMenu.prototype.attachEvents = function() {
-  var startButton = this.container.getElementById('startButton');
-  utils.addEvent(startButton, 'click', this.handleStartButton.bind(this));
+  if (this.callback) {
+    var startButton = this.container.querySelector('button');
+    utils.addEvent(startButton, 'click', this.handleStartButton.bind(this, this.callback));
+  }
 };
 
 /**
  * Creates and initializes a new start button.
  */
-StartMenu.prototype.handleStartButton = function() {
-  var workspace = new Workspace();
-  workspace.init({
-    totalWoodChips: this.getInputValue('totalWoodChips'),
-    totalTermites: this.getInputValue('totalTermites'),
-    sensorLength: this.getInputValue('sensorLength')
-  });
+StartMenu.prototype.handleStartButton = function(callback, e) {
+  e.preventDefault(); // TODO: write test for this
+  if (!callback) throw new Error('handleStartButton requires callback argument.');
+  callback.call(this);
+  this.container.innerHTML = '';
 };
 
 /**
@@ -64,7 +66,7 @@ StartMenu.prototype.handleStartButton = function() {
  */
 StartMenu.prototype.getInputValue = function(id) {
   if (!id) throw new Error('StartMenu.getInputValue requires "id" argument.');
-  return parseInt(this.container.getElementById(id).value);
+  return parseInt(this.container.querySelector('input[id=' + id +']').value);
 };
 
 module.exports = StartMenu;

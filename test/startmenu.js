@@ -5,7 +5,9 @@ var handlebars = require('handlebars');
 
 var StartMenu = require('../src/startmenu');
 var Workspace = require('../src/workspace');
-var template = require('../src/templates/menu.hbs');
+var template = require('../src/templates/startmenu.hbs');
+
+var utils = require('drawing-utils-lib');
 
 describe('StartMenu', function() {
 
@@ -36,12 +38,18 @@ describe('StartMenu', function() {
       expect(menu.labels.labelSensorLength).to.be('Sensor Length');
       expect(menu.labels.labelStartButton).to.be('Start');
 
-      menu.init({}, {
+      var fnB = function() {
+
+      };
+      //var spyFnB = sinon.spy(fnB); // TODO: spy on this function
+
+      menu.init({}, fnB, {
         labelTotalWoodChips: 'Red',
         labelTotalTermites: 'Green',
         labelSensorLength: 'Blue',
         labelStartButton: 'Yello'
       });
+      //expect(spyFnB.called).to.be(true);
       expect(menu.labels.labelTotalWoodChips).to.be('Red');
       expect(menu.labels.labelTotalTermites).to.be('Green');
       expect(menu.labels.labelSensorLength).to.be('Blue');
@@ -57,8 +65,12 @@ describe('StartMenu', function() {
         [],
         function (errors, window) {
           var menu = new StartMenu();
+          var stubAttachEvents = sinon.stub(menu, 'attachEvents');
           var body = window.document.querySelector('body');
-          menu.init(body, {
+          body.insertAdjacentHTML = function(position, content) {
+            window.document.body.innerHTML = content;
+          };
+          menu.init(body, function() {}, {
             labelTotalWoodChips: 'Red',
             labelTotalTermites: 'Green',
             labelSensorLength: 'Blue',
@@ -71,6 +83,8 @@ describe('StartMenu', function() {
           expect(body.querySelector('label[for=totalTermites]').textContent).to.be('Green');
           expect(body.querySelector('label[for=sensorLength]').textContent).to.be('Blue');
           expect(body.querySelector('label[for=startButton]').textContent).to.be('Yellow');
+          expect(stubAttachEvents.calledOnce).to.be(true);
+          menu.attachEvents.restore();
         }
       );
     });
@@ -79,21 +93,21 @@ describe('StartMenu', function() {
   describe('Attach events', function() {
 
     it('should attach events.', function() {
+
       jsdom.env(
         "<body><button id='startButton'>start</button></body>",
         [],
         function (errors, window) {
+
+          var stubUtils = sinon.stub(utils, 'addEvent');
+
           var menu = new StartMenu();
-          var spy = sinon.spy(menu, "handleStartButton");
-
-          menu.container = window.document;
+          menu.callback = function() {};
+          menu.container = window.document.body;
           menu.attachEvents();
-          var button = window.document.getElementById('startButton');
-          var event = window.document.createEvent('Event');
-          event.initEvent('click', true, true);
-          button.dispatchEvent(event);
 
-          expect(spy.calledOnce).to.be(true);
+          expect(stubUtils.called).to.be(true);
+          utils.addEvent.restore();
         }
       );
     });

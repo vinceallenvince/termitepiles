@@ -6,8 +6,32 @@
     <meta name="description" content="" />
     <title>Termite Piles</title>
     <link rel="stylesheet" href="css/bitshadowmachine.min.css" type="text/css" charset="utf-8" />
+    <style>
+      label {color: white;}
+    </style>
   </head>
   <body>
-    <script src="scripts/bitshadowmachine.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="scripts/termitepiles.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+      var startMenu = new TermitePiles.StartMenu();
+      startMenu.init(document.body, function(e) {
+        var workspace = new TermitePiles.Workspace();
+        workspace.init({
+          totalWoodChips: this.getInputValue('totalWoodChips'),
+          totalTermites: this.getInputValue('totalTermites'),
+          sensorLength: this.getInputValue('sensorLength'),
+          workspaceWidth: 940,
+          workspaceHeight: 480,
+          workspaceResolution: 2,
+          workspaceContainer: document.body,
+          workspaceColor: [0, 0, 0],
+          workspaceFriction: 0.1
+        });
+        workspace.createColorPalettes();
+        workspace.createSystem();
+      });
+      startMenu.render(TermitePiles.templateStartMenu);
+
+    </script>
   </body>
 </html

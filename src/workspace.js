@@ -1,6 +1,7 @@
 var BitShadowMachine = require('bitshadowmachine');
 var ColorPalette = require('colorpalette');
 var rand = require('drawing-utils-lib').getRandomNumber;
+var Termite = require('./termite');
 var Utils = require('./utils');
 var Vector = require('vector2d-lib');
 var Woodchip = require('./woodchip');
@@ -16,7 +17,8 @@ function Workspace() {
   this.paletteWoodchip = new ColorPalette();
   this.initialWoodchipLocs = [];
   BitShadowMachine.System.Classes = {
-    Woodchip: Woodchip
+    Woodchip: Woodchip,
+    Termite: Termite
   };
 }
 
@@ -55,6 +57,7 @@ Workspace.prototype.init = function(params) {
 
 Workspace.prototype.createSystem = function() {
   BitShadowMachine.System.setup(this.setupHandler.bind(this));
+  BitShadowMachine.System.loop();
 };
 
 Workspace.prototype.setupHandler = function() {
@@ -72,6 +75,10 @@ Workspace.prototype.setupHandler = function() {
   for (var i = 0; i < this.totalWoodChips; i++) {
     this.createWoodchips(this.getLocation(), i);
   }
+
+  for (var i = 0; i < this.totalTermites; i++) {
+    this.createTermites(rand(0, this.workspaceWidth), rand(0, this.workspaceHeight));
+  }
 };
 
 /**
@@ -79,6 +86,7 @@ Workspace.prototype.setupHandler = function() {
  * @param  {Object} loc   A vector.
  * @param  {number} index A number representing the index in the total
  *     number of Woodchips.
+ * @returns {Object} A Woodchip.
  */
 Workspace.prototype.createWoodchips = function(loc, index) {
   var chip = BitShadowMachine.System.add('Woodchip', {
@@ -93,6 +101,24 @@ Workspace.prototype.createWoodchips = function(loc, index) {
   chip.index = index;
   chip.dropCount = 60;
   return chip;
+};
+
+/**
+ * Creates BitShadowMachine records representing Termites.
+ * @param  {number} x The location on the x-axis.
+ * @param  {number} y The location on the y-axis.
+ * @returns {Object} A Termite.
+ */
+Workspace.prototype.createTermites = function(x, y, velocity) {
+  var termite = BitShadowMachine.System.add('Termite', {
+    type: 'Termite',
+    scale: 2,
+    color: [255, 0, 0],
+    isStatic: false,
+    location: new Vector(x, y)
+  });
+  console.log(this.paletteTermite.getColor());
+  return termite;
 };
 
 /**
